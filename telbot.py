@@ -48,7 +48,7 @@ def get_weather (update: Update, context: CommandHandler):
         req = requests.get(f"https://api.openweathermap.org/data/2.5/weather?q={loc}&appid={apiKey}")
         data = json.loads(req.text)
         weather = {
-        'weather': f"Weather:  {data['weather'][0]['main']}",
+        'weather': f"Atmosphere:  {data['weather'][0]['main']}",
             'country': f"Country:  {data['sys']['country']}",
             'location': f"City:  {data['name']}",
             'weatherDesc': f"Desc:  {data['weather'][0]['description']}",
@@ -70,7 +70,8 @@ def _help(update: Update, context: CallbackContext):
         """Available Commands :-
     /help - get help on how to use bot.
     /quote - get an inspirational quote.
-    /compute - Ask and get answers to your math and scientific questions
+    /compute <question> - Ask and get answers to your math and scientific questions (eg. what is an atom, 6 + 3)
+    /weather <city> - Find weather in any city (eg. /weather Accra)
     """
   
     )
