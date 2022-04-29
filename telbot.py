@@ -1,6 +1,7 @@
 import json
 import os
 import requests
+import wolframalpha
 from dotenv import load_dotenv
 from setuptools import Command
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
@@ -26,6 +27,13 @@ def quote(update: Update, context: CallbackContext):
     msg = f"{res['q']}\n\n    ~ {res['a']}"
     update.message.reply_text(msg)
 
+def compute(update: Update, context: CallbackContext, *question):
+    question = " ".join(question.split(" "))
+    app_id = ""
+    client = wolframalpha.Client(app_id)
+    res = client.query(question)
+    update.message.reply_text(res)
+    
 def _help(update: Update, context: CallbackContext):
     update.message.reply_text(
         """Available Commands :-
