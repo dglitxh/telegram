@@ -42,7 +42,7 @@ def compute(update: Update, context: CallbackContext, ):
         update.message.reply_text(res)
     except:
         logging.error("could not find an answer on wolfram")
-        update.message.reply_text("Errm... dont know about that one buddy 😬😬")
+        update.message.reply_text("Errm... dont know about that one buddy 😬😬. type /help for help")
 
 def get_weather (update: Update, context: CommandHandler):
     loc = " ".join(context.args)
@@ -66,29 +66,33 @@ def get_weather (update: Update, context: CommandHandler):
         update.message.reply_text(msg)
     except:
         logging.error("could not find weather on open weather")
-        update.message.reply_text("Errm... couldn't find weather check spelling and/or try again 😬😬")
+        update.message.reply_text("Errm... couldn't find weather check spelling and/or try again 😬😬. type /help for help")
 
 def poll(update: Update, context: CallbackContext):
-    print(context.args)
-    qm = [x for x in context.args if "?" in x][0]
-    ind = context.args.index(qm)
-    questions = [' '.join(x.split('-')) for x in context.args[ind+1:]]
-    print(questions)
-    message = context.bot.send_poll(
-        update.effective_chat.id,
-        " ".join(context.args[:ind+1]),
-        questions,
-        is_anonymous=False,
-        allows_multiple_answers=False
-    )
-    payload = {
-        message.poll.id: {
-            "questions": questions,
-            "message_id": message.message_id,
-            "chat_id": update.effective_chat.id,
-            "answers": 0,
+    try:
+        qm = [x for x in context.args if "?" in x][0]
+        ind = context.args.index(qm)
+        questions = [' '.join(x.split('-')) for x in context.args[ind+1:]]
+        print(questions)
+        message = context.bot.send_poll(
+            update.effective_chat.id,
+            " ".join(context.args[:ind+1]),
+            questions,
+            is_anonymous=False,
+            allows_multiple_answers=False
+        )
+        payload = {
+            message.poll.id: {
+                "questions": questions,
+                "message_id": message.message_id,
+                "chat_id": update.effective_chat.id,
+                "answers": 0,
+            }
         }
-    }
+    except:
+        logging.error("/Poll: could not create poll due to errors")
+        update.message.reply_text("could not create poll due to errors. type /help for help")
+
     context.bot_data.update(payload)
 
 
