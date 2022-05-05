@@ -1,3 +1,4 @@
+from email import message
 import json
 import os
 import requests
@@ -13,6 +14,8 @@ from telegram.ext import (
     Filters,
     ConversationHandler,
     CallbackContext,
+    PollAnswerHandler,
+    PollHandler,
 )
 
 load_dotenv()
@@ -57,7 +60,7 @@ def get_weather (update: Update, context: CommandHandler):
             'feel': f"Feels like:  {round(data['main']['feels_like'] - 273.15)}°С",
             'windSpeed': f"Wind:  {data['wind']['speed']}km/h" 
         }
-        msg = f"Weather in {loc.title()}\n********************\n"
+        msg = f"{'*'*12}\nWeather in {loc.title()}\n{'*'*12}\n"
         for i in weather:
             msg += weather[i] + "\n\n"
         update.message.reply_text(msg)
@@ -65,11 +68,36 @@ def get_weather (update: Update, context: CommandHandler):
         logging.error("could not find weather on open weather")
         update.message.reply_text("Errm... couldn't find weather check spelling and/or try again 😬😬")
 
+def poll(update: Update, context: CallbackContext):
+    print(context.args)
+    qm = [x for x in context.args if "?" in x][0]
+    ind = context.args.index(qm)
+    questions = [' '.join(x.split('-')) for x in context.args[ind+1:]]
+    print(questions)
+    message = context.bot.send_poll(
+        update.effective_chat.id,
+        " ".join(context.args[:ind+1]),
+        questions,
+        is_anonymous=False,
+        allows_multiple_answers=False
+    )
+    payload = {
+        message.poll.id: {
+            "questions": questions,
+            "message_id": message.message_id,
+            "chat_id": update.effective_chat.id,
+            "answers": 0,
+        }
+    }
+    context.bot_data.update(payload)
+
+
 def _help(update: Update, context: CallbackContext):
     update.message.reply_text(
         """Available Commands :-
     /help - get help on how to use bot.
     /quote - get an inspirational quote.
+    /poll <question? answers(*separated by spaces *use -(dash) to separate multiple worded answers)> - create a poll(eg: who am i? a-bot, a-rabbit, man)
     /compute <question> - Ask and get answers to your math and scientific questions (eg. what is an atom, 6 + 3)
     /weather <city> - Find weather in any city (eg. /weather Accra)
     """
@@ -81,6 +109,7 @@ updater.dispatcher.add_handler(CommandHandler("help", _help))
 updater.dispatcher.add_handler(CommandHandler("quote", quote))
 updater.dispatcher.add_handler(CommandHandler("compute", compute))
 updater.dispatcher.add_handler(CommandHandler("weather", get_weather))
+updater.dispatcher.add_handler(CommandHandler("poll", poll))
 
 updater.start_polling()
 
