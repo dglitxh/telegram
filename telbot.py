@@ -5,7 +5,7 @@ import requests
 import logging
 import wolframalpha
 from dotenv import load_dotenv
-from setuptools import Command
+from telegram.constants import ParseMode
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
@@ -95,6 +95,31 @@ def poll(update: Update, context: CallbackContext):
 
     context.bot_data.update(payload)
 
+async def receive_poll_answer(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+    """Summarize a users poll vote"""
+    answer = update.poll_answer
+    answered_poll = context.bot_data[answer.poll_id]
+    try:
+        questions = answered_poll["questions"]
+    # this means this poll answer update is from an old poll, we can't do our answering then
+    except KeyError:
+        return
+    selected_options = answer.option_ids
+    answer_string = ""
+    for question_id in selected_options:
+        if question_id != selected_options[-1]:
+            answer_string += questions[question_id] + " and "
+        else:
+            answer_string += questions[question_id]
+    await context.bot.send_message(
+        answered_poll["chat_id"],
+        f"{update.effective_user.mention_html()} feels {answer_string}!",
+        parse_mode=ParseMode.HTML,
+    )
+    answered_poll["answers"] += 1
+    # Close poll after three participants voted
+    if answered_poll["answers"] == 10:
+        await context.bot.stop_poll(answered_poll["chat_id"], answered_poll["message_id"])
 
 def _help(update: Update, context: CallbackContext):
     update.message.reply_text(
@@ -114,6 +139,7 @@ updater.dispatcher.add_handler(CommandHandler("quote", quote))
 updater.dispatcher.add_handler(CommandHandler("compute", compute))
 updater.dispatcher.add_handler(CommandHandler("weather", get_weather))
 updater.dispatcher.add_handler(CommandHandler("poll", poll))
+updater.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
 
 updater.start_polling()
 
