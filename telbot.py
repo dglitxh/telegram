@@ -126,7 +126,8 @@ def _help(update: Update, context: CallbackContext):
         """Available Commands :-
     /help - get help on how to use bot.
     /quote - get an inspirational quote.
-    /poll <question? answers(*separated by spaces *use -(dash) to separate multiple worded answers)> - create a poll(eg: who am i? a-bot, a-rabbit, man)
+    /poll <question? comma separated answers use (-) to separate multiple worded answers)>
+     - create a poll(eg: who am i? a-bot, a-rabbit, man)
     /compute <question> - Ask and get answers to your math and scientific questions (eg. what is an atom, 6 + 3)
     /weather <city> - Find weather in any city (eg. /weather Accra)
     """
