@@ -30,7 +30,9 @@ def quote(update: Update, context: CallbackContext):
     res = json.loads(req.text)[0]
     msg = f"{res['q']}\n\n    ~ {res['a']}"
     update.message.reply_text(msg)
-
+def image (update: Update, context: CallbackContext):
+    img = 'https://picsum.photos/200/300/?random'
+    update.message.reply_photo(img)
 def compute(update: Update, context: CallbackContext, ):
     question = " ".join(context.args)
     app_id = "E8H76X-T8V8UHPUY2"
@@ -95,7 +97,7 @@ def poll(update: Update, context: CallbackContext):
 
     context.bot_data.update(payload)
 
-async def receive_poll_answer(update: Update, context: CallbackContext.DEFAULT_TYPE) -> None:
+async def receive_poll_answer(update: Update, context: CallbackContext) -> None:
     """Summarize a users poll vote"""
     answer = update.poll_answer
     answered_poll = context.bot_data[answer.poll_id]
@@ -125,6 +127,7 @@ def _help(update: Update, context: CallbackContext):
     update.message.reply_text(
         """Available Commands :-
     /help - get help on how to use bot.
+    /image - get a random image
     /quote - get an inspirational quote.
     /poll <question? comma separated answers use (-) to separate multiple worded answers)>
      - create a poll(eg: who am i? a-bot, a-rabbit, man)
@@ -139,6 +142,7 @@ updater.dispatcher.add_handler(CommandHandler("help", _help))
 updater.dispatcher.add_handler(CommandHandler("quote", quote))
 updater.dispatcher.add_handler(CommandHandler("compute", compute))
 updater.dispatcher.add_handler(CommandHandler("weather", get_weather))
+updater.dispatcher.add_handler(CommandHandler("image", image))
 updater.dispatcher.add_handler(CommandHandler("poll", poll))
 updater.dispatcher.add_handler(PollAnswerHandler(receive_poll_answer))
 
