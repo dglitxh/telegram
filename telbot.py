@@ -5,7 +5,7 @@ import requests
 import logging
 import wolframalpha
 from dotenv import load_dotenv
-from telegram.constants import ParseMode
+# from telegram.constants import ParseMode
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
