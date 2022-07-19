@@ -5,7 +5,8 @@ import requests
 import logging
 import wolframalpha
 from dotenv import load_dotenv
-# from telegram.constants import ParseMode
+import qrcode
+from telegram.constants import ParseMode
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
@@ -30,9 +31,23 @@ def quote(update: Update, context: CallbackContext):
     res = json.loads(req.text)[0]
     msg = f"{res['q']}\n\n    ~ {res['a']}"
     update.message.reply_text(msg)
+
 def image (update: Update, context: CallbackContext):
     img = 'https://picsum.photos/200/300/?random'
     update.message.reply_photo(img)
+
+def genqr (update: Update, context: CallbackContext):
+    site_link = " ".join(context.args)
+    qr = qrcode.QRCode(
+        version=1,
+        box_size=10,
+        border=5
+    )
+    qr.add_data(site_link)
+    qr.make(fit=True)
+    img = qr.make_image(fill='black', back_color="white")
+    update.message.reply_photo(img)
+
 def compute(update: Update, context: CallbackContext, ):
     question = " ".join(context.args)
     app_id = "E8H76X-T8V8UHPUY2"
@@ -129,6 +144,7 @@ def _help(update: Update, context: CallbackContext):
     /help - get help on how to use bot.
     /image - get a random image
     /quote - get an inspirational quote.
+    /genqr - generate qr code for a website link 
     /poll <question? comma separated answers use (-) to separate multiple worded answers)>
      - create a poll(eg: who am i? a-bot, a-rabbit, man)
     /compute <question> - Ask and get answers to your math and scientific questions (eg. what is an atom, 6 + 3)
@@ -140,6 +156,7 @@ def _help(update: Update, context: CallbackContext):
 updater.dispatcher.add_handler(CommandHandler("start", start))
 updater.dispatcher.add_handler(CommandHandler("help", _help))
 updater.dispatcher.add_handler(CommandHandler("quote", quote))
+Updater.dispatcher.add_handler(CommandHandler("genqr", callback))
 updater.dispatcher.add_handler(CommandHandler("compute", compute))
 updater.dispatcher.add_handler(CommandHandler("weather", get_weather))
 updater.dispatcher.add_handler(CommandHandler("image", image))
