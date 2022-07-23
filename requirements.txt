@@ -21,7 +21,7 @@ humanize==3.13.1
 idna==3.3
 langtable==0.0.58
 libcomps==0.1.18
-lxml==4.7.1
+lxml==4.9.1
 Mako==1.1.4
 MarkupSafe==2.0.0
 nftables==0.1
