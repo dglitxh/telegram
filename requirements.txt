@@ -29,7 +29,7 @@ idna==3.3
 jaraco.context==4.1.2
 langtable==0.0.58
 libcomps==0.1.18
-lxml==4.7.1
+lxml==4.9.1
 Mako==1.1.4
 MarkupSafe==2.0.0
 more-itertools==8.13.0
