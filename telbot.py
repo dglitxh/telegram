@@ -5,14 +5,13 @@ import requests
 import logging
 import wolframalpha
 from dotenv import load_dotenv
-import qrcode
-from telegram.constants import ParseMode
+from telegram import ParseMode
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
     CommandHandler,
     MessageHandler,
-    Filters,
+    # Filters,
     ConversationHandler,
     CallbackContext,
     PollAnswerHandler,
@@ -36,17 +35,17 @@ def image (update: Update, context: CallbackContext):
     img = 'https://picsum.photos/200/300/?random'
     update.message.reply_photo(img)
 
-def genqr (update: Update, context: CallbackContext):
-    site_link = " ".join(context.args)
-    qr = qrcode.QRCode(
-        version=1,
-        box_size=10,
-        border=5
-    )
-    qr.add_data(site_link)
-    qr.make(fit=True)
-    img = qr.make_image(fill='black', back_color="white")
-    update.message.reply_photo(img)
+# def genqr (update: Update, context: CallbackContext):
+#     site_link = " ".join(context.args)
+#     qr = qrcode.QRCode(
+#         version=1,
+#         box_size=10,
+#         border=5
+#     )
+#     qr.add_data(site_link)
+#     qr.make(fit=True)
+#     img = qr.make_image(fill='black', back_color="white")
+#     update.message.reply_photo(img)
 
 def compute(update: Update, context: CallbackContext, ):
     question = " ".join(context.args)
@@ -156,7 +155,7 @@ def _help(update: Update, context: CallbackContext):
 updater.dispatcher.add_handler(CommandHandler("start", start))
 updater.dispatcher.add_handler(CommandHandler("help", _help))
 updater.dispatcher.add_handler(CommandHandler("quote", quote))
-Updater.dispatcher.add_handler(CommandHandler("genqr", callback))
+#
 updater.dispatcher.add_handler(CommandHandler("compute", compute))
 updater.dispatcher.add_handler(CommandHandler("weather", get_weather))
 updater.dispatcher.add_handler(CommandHandler("image", image))
